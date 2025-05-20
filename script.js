@@ -81,6 +81,41 @@ const createPokemonCard = (pokemon) => {
 // Mostrar detalles del Pokémon al hacer clic
 const showPokemonDetails = async (pokemon) => {
     try {
+        // Verificar si `species` y `species.url` existen
+        if (!pokemon.species || !pokemon.species.url) {
+            console.error(`Missing species data for Pokémon #${pokemon.id}`);
+            alert("No se pudo cargar la información de este Pokémon.");
+            return;
+        }
+
         const speciesUrl = pokemon.species.url;
         const speciesRes = await fetch(speciesUrl);
-        if (!speciesRes.ok) throw new Error(`Error fetching
+
+        if (!speciesRes.ok) {
+            throw new Error(`Error fetching species data for Pokémon #${pokemon.id}`);
+        }
+
+        const speciesData = await speciesRes.json();
+
+        // Determinar la generación
+        const generation = speciesData.generation.name.replace('generation-', 'Generation ').toUpperCase();
+
+        // Mostrar detalles en una alerta
+        const details = `
+            Name: ${pokemon.name[0].toUpperCase() + pokemon.name.slice(1)}
+            ID: #${pokemon.id.toString().padStart(3, '0')}
+            Types: ${pokemon.types.map(type => type.type.name).join(', ')}
+            Generation: ${generation}
+            Height: ${pokemon.height / 10} m
+            Weight: ${pokemon.weight / 10} kg
+        `;
+
+        alert(details); // Puedes reemplazar esto con un modal si prefieres
+    } catch (error) {
+        console.error(error);
+        alert("Ocurrió un error al cargar los detalles del Pokémon.");
+    }
+};
+
+// Iniciar la carga de Pokémon
+fetchPokemons();
