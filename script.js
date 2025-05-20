@@ -1,5 +1,5 @@
 const poke_container = document.getElementById('poke-container');
-const pokemon_count = 150; // Número máximo de Pokémon a cargar
+const pokemon_count = 150; // Reducido a un número razonable
 const colors = {
     fire: '#FDDFDF',
     grass: '#DEFDE0',
@@ -31,11 +31,15 @@ const getPokemon = async (id) => {
     try {
         const url = `https://pokeapi.co/api/v2/pokemon/ ${id}`;
         const res = await fetch(url);
-        if (!res.ok) throw new Error(`Error fetching Pokémon #${id}`);
+
+        if (!res.ok) {
+            throw new Error(`Error fetching Pokémon #${id}: ${res.status} ${res.statusText}`);
+        }
+
         const data = await res.json();
         createPokemonCard(data);
     } catch (error) {
-        console.error(error);
+        console.error(error.message);
     }
 };
 
