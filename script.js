@@ -1,5 +1,5 @@
 const poke_container = document.getElementById('poke-container');
-const pokemon_count = 150; // Reducido para evitar problemas de rendimiento
+const pokemon_count = 150; // Número máximo de Pokémon a cargar
 const colors = {
     fire: '#FDDFDF',
     grass: '#DEFDE0',
@@ -28,10 +28,15 @@ const fetchPokemons = async () => {
 
 // Obtener datos de un Pokémon específico
 const getPokemon = async (id) => {
-    const url = `https://pokeapi.co/api/v2/pokemon/ ${id}`;
-    const res = await fetch(url);
-    const data = await res.json();
-    createPokemonCard(data);
+    try {
+        const url = `https://pokeapi.co/api/v2/pokemon/ ${id}`;
+        const res = await fetch(url);
+        if (!res.ok) throw new Error(`Error fetching Pokémon #${id}`);
+        const data = await res.json();
+        createPokemonCard(data);
+    } catch (error) {
+        console.error(error);
+    }
 };
 
 // Crear tarjeta de Pokémon
@@ -75,25 +80,7 @@ const createPokemonCard = (pokemon) => {
 
 // Mostrar detalles del Pokémon al hacer clic
 const showPokemonDetails = async (pokemon) => {
-    const speciesUrl = pokemon.species.url;
-    const speciesRes = await fetch(speciesUrl);
-    const speciesData = await speciesRes.json();
-
-    // Determinar la generación
-    const generation = speciesData.generation.name;
-
-    // Mostrar detalles en una alerta o modal
-    const details = `
-        Name: ${pokemon.name[0].toUpperCase() + pokemon.name.slice(1)}
-        ID: #${pokemon.id.toString().padStart(3, '0')}
-        Types: ${pokemon.types.map(type => type.type.name).join(', ')}
-        Generation: ${generation}
-        Height: ${pokemon.height / 10} m
-        Weight: ${pokemon.weight / 10} kg
-    `;
-
-    alert(details); // Puedes reemplazar esto con un modal si prefieres
-};
-
-// Iniciar la carga de Pokémon
-fetchPokemons();
+    try {
+        const speciesUrl = pokemon.species.url;
+        const speciesRes = await fetch(speciesUrl);
+        if (!speciesRes.ok) throw new Error(`Error fetching
